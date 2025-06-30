@@ -7,7 +7,7 @@ const DashboardScreen = ({ navigation }) => {
   const { user, logout } = useAuth();
   const { projects } = useProject();
 
-  const recentProjects = projects.slice(0, 3);
+  const recentProjects = projects ? projects.slice(0, 3) : [];
 
   const handleCreateNewScene = () => {
     navigation.navigate('CreateScene');

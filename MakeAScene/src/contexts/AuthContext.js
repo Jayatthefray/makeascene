@@ -10,36 +10,68 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function loadUser() {
-      const { user } = await getCurrentUser();
-      setUser(user);
-      setLoading(false);
+      try {
+        const { user } = await getCurrentUser();
+        setUser(user);
+      } catch (err) {
+        console.warn('Auth initialization failed:', err);
+        setError('Authentication service unavailable');
+      } finally {
+        setLoading(false);
+      }
     }
     loadUser();
   }, []);
 
   const handleSignUp = async (email, password) => {
-    const { data, error } = await signUp(email, password);
-    if (!error) setUser(data?.user || null);
-    setError(error);
-    return { data, error };
+    try {
+      const { data, error } = await signUp(email, password);
+      if (!error) setUser(data?.user || null);
+      setError(error);
+      return { data, error };
+    } catch (err) {
+      const errorMsg = 'Authentication service unavailable';
+      setError(errorMsg);
+      return { data: null, error: { message: errorMsg } };
+    }
   };
 
   const handleSignIn = async (email, password) => {
-    const { data, error } = await signIn(email, password);
-    if (!error) setUser(data?.user || null);
-    setError(error);
-    return { data, error };
+    try {
+      const { data, error } = await signIn(email, password);
+      if (!error) setUser(data?.user || null);
+      setError(error);
+      return { data, error };
+    } catch (err) {
+      const errorMsg = 'Authentication service unavailable';
+      setError(errorMsg);
+      return { data: null, error: { message: errorMsg } };
+    }
   };
 
   const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (!error) setUser(null);
-    setError(error);
-    return { error };
+    try {
+      const { error } = await signOut();
+      if (!error) setUser(null);
+      setError(error);
+      return { error };
+    } catch (err) {
+      // Even if signout fails, clear local user state
+      setUser(null);
+      return { error: null };
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, signUp: handleSignUp, signIn: handleSignIn, signOut: handleSignOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      error, 
+      signUp: handleSignUp, 
+      signIn: handleSignIn, 
+      signOut: handleSignOut,
+      logout: handleSignOut // Legacy alias
+    }}>
       {children}
     </AuthContext.Provider>
   );

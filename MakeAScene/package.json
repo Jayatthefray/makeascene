@@ -30,7 +30,10 @@
     "react-native-webrtc": "^1.106.1",
     "openai": "^4.25.0",
     "groq-sdk": "^0.3.3",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "react-native-web": "~0.19.6",
+    "react-dom": "18.2.0",
+    "@expo/webpack-config": "^19.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

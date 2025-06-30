@@ -3,12 +3,21 @@ import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Make sure to set these in your .env file at the project root
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
 console.log('Environment variables check:');
 console.log('EXPO_PUBLIC_SUPABASE_URL:', supabaseUrl);
 console.log('EXPO_PUBLIC_SUPABASE_ANON_KEY:', supabaseAnonKey ? '[PRESENT]' : '[UNDEFINED]');
+
+// Check if we have real credentials
+const hasValidCredentials = 
+  supabaseUrl !== 'https://placeholder.supabase.co' && 
+  supabaseAnonKey !== 'placeholder-key';
+
+if (!hasValidCredentials) {
+  console.warn('⚠️ Using placeholder Supabase credentials. Please update your .env file with real values.');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -18,6 +27,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
   },
 });
+
+export { hasValidCredentials };
 
 // ===== User Authentication =====
 export const signUp = async (email, password) => {
