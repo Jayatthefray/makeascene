@@ -8,6 +8,7 @@ import { ProjectProvider } from './src/contexts/ProjectContext';
 import ProjectListScreen from './screens/ProjectListScreen';
 import ProjectDetailScreen from './screens/ProjectDetailScreen';
 import LoginScreen from './screens/LoginScreen';
+import DashboardScreen from './screens/DashboardScreen';
 
 const Stack = createStackNavigator();
 
@@ -130,6 +131,7 @@ function RootNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       ) : (
         <>
+          <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ headerShown: false }} />
           <Stack.Screen name="ProjectList" component={ProjectListScreen} options={{ title: 'Projects' }} />
           <Stack.Screen name="ProjectDetail" component={ProjectDetailScreen} options={{ title: 'Project Details' }} />
         </>
