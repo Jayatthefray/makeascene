@@ -3,6 +3,10 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { AuthProvider } from './src/contexts/AuthContext';
+import { ProjectProvider } from './src/contexts/ProjectContext';
+import ProjectListScreen from './screens/ProjectListScreen';
+import ProjectDetailScreen from './screens/ProjectDetailScreen';
 
 const Stack = createStackNavigator();
 
@@ -269,30 +273,34 @@ const styles = StyleSheet.create({
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator 
-        initialRouteName="Home"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#007AFF',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
-      >
-        <Stack.Screen 
-          name="Home" 
-          component={Home} 
-          options={{ title: '12-Page App' }}
-        />
-        <Stack.Screen 
-          name="Page" 
-          component={Page} 
-          options={({ route }) => ({ title: `Page ${route.params.pageNumber}` })}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <ProjectProvider>
+        <NavigationContainer>
+          <Stack.Navigator 
+            initialRouteName="ProjectList"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#007AFF',
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }}
+          >
+            <Stack.Screen 
+              name="ProjectList" 
+              component={ProjectListScreen} 
+              options={{ title: 'Projects' }}
+            />
+            <Stack.Screen 
+              name="ProjectDetail" 
+              component={ProjectDetailScreen} 
+              options={{ title: 'Project Details' }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ProjectProvider>
+    </AuthProvider>
   );
 } 
