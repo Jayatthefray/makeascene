@@ -163,4 +163,16 @@ Session log is a sheet that you have to update at the end of your coding session
 
 **Last Updated**: 2024-12-19
 **Total Sessions**: 1
-**Total Hours**: [To be calculated] 
+**Total Hours**: [To be calculated]
+
+## [Date: YYYY-MM-DD]
+
+- Set up organized project structure (screens, components, contexts, assets)
+- Integrated Supabase (auth, projects, shots, etc.)
+- Implemented login, project list, and project detail screens
+- Added dashboard screen with recent projects and credit balance
+- Enabled navigation: login → dashboard → projects → project detail
+- Added animated splash screen using mp4 video background
+- Addressed Expo AV deprecation warning (future migration to expo-video recommended)
+- Debugged and resolved environment variable, navigation, and rendering issues
+- Session ended 
