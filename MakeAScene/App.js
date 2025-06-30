@@ -7,6 +7,7 @@ import { AuthProvider } from './src/contexts/AuthContext';
 import { ProjectProvider } from './src/contexts/ProjectContext';
 import ProjectListScreen from './screens/ProjectListScreen';
 import ProjectDetailScreen from './screens/ProjectDetailScreen';
+import LoginScreen from './screens/LoginScreen';
 
 const Stack = createStackNavigator();
 
@@ -119,6 +120,23 @@ const Home = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
+function RootNavigator() {
+  const { user, loading } = require('./src/contexts/AuthContext').useAuth();
+  if (loading) return null; // Optionally show a splash/loading screen
+  return (
+    <Stack.Navigator>
+      {!user ? (
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+      ) : (
+        <>
+          <Stack.Screen name="ProjectList" component={ProjectListScreen} options={{ title: 'Projects' }} />
+          <Stack.Screen name="ProjectDetail" component={ProjectDetailScreen} options={{ title: 'Project Details' }} />
+        </>
+      )}
+    </Stack.Navigator>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -276,29 +294,7 @@ export default function App() {
     <AuthProvider>
       <ProjectProvider>
         <NavigationContainer>
-          <Stack.Navigator 
-            initialRouteName="ProjectList"
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: '#007AFF',
-              },
-              headerTintColor: '#fff',
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          >
-            <Stack.Screen 
-              name="ProjectList" 
-              component={ProjectListScreen} 
-              options={{ title: 'Projects' }}
-            />
-            <Stack.Screen 
-              name="ProjectDetail" 
-              component={ProjectDetailScreen} 
-              options={{ title: 'Project Details' }}
-            />
-          </Stack.Navigator>
+          <RootNavigator />
         </NavigationContainer>
       </ProjectProvider>
     </AuthProvider>
