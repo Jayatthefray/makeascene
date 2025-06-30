@@ -1,0 +1,844 @@
+Make A Scene - Product Requirements Document (PRD)
+Document Version: 1.0
+ Last Updated: June 29, 2025
+ Product Manager: [Your Name]
+ Engineering Lead: [To be assigned]
+ Design Lead: [To be assigned]
+
+Executive Summary
+Vision Statement
+Make A Scene will be the world's first AI-powered interactive storytelling app that transforms anyone into a filmmaker through intelligent constraint-based storyboarding and multi-device collaborative recording.
+Product Mission
+To democratize filmmaking by removing technical barriers while maintaining creative quality, enabling friends, families, and couples to create professional-looking short films together using nothing but their smartphones and AI guidance.
+Success Metrics
+User Acquisition: 100K downloads in first 6 months
+Engagement: 70% of users complete their first scene
+Retention: 40% monthly active user retention
+Revenue: $50K MRR by month 12 through credit sales
+Content Quality: 60% of completed scenes get shared externally
+
+Problem Statement
+Current Market Pain Points
+Complexity Barrier: Existing video creation tools require technical expertise
+Equipment Requirements: Traditional filmmaking demands expensive equipment
+Solo Creation: Most apps focus on individual content creation
+Generic Content: AI video tools produce cookie-cutter results
+Technical Constraints: Apps don't adapt to real-world filming limitations
+Target User Problems
+Social Groups: Want to create memorable content together but lack filmmaking skills
+Couples: Desire creative date activities that produce shareable keepsakes
+Families: Need engaging activities that bring different generations together
+Content Creators: Require tools that help ideate and execute creative concepts quickly
+
+Solution Overview
+Core Innovation: Smart Storyboarding System
+Make A Scene's constraint-based AI generates only filmable scenes based on:
+Available actors (1-8 people)
+Equipment availability (tripod, multiple devices)
+Filming experience level
+Location and environment
+Unique Value Propositions
+Guaranteed Filmability: Every generated scene can be executed with available resources
+Collaborative Creation: Multi-device synchronization for professional coverage
+AI-Guided Direction: Step-by-step filming instructions with visual guides
+Social Entertainment: Designed for groups, not individuals
+Progressive Complexity: Scales from simple to cinematic based on user capability
+
+Target Market & Users
+Primary Personas
+Persona 1: "Social Sarah" (25-35, Urban Professional)
+Demographics: Young professional, lives with roommates/partner
+Behavior: Active on social media, enjoys group activities
+Pain Points: Generic content, lacks creative outlets
+Goals: Create unique content with friends for social sharing
+Usage Pattern: Weekend activities, special occasions
+Persona 2: "Family Frank" (35-45, Suburban Parent)
+Demographics: Parent of 2-3 children, middle-income household
+Behavior: Values family time, seeks engaging activities
+Pain Points: Screen time concerns, generation gap activities
+Goals: Create lasting family memories, engage all ages
+Usage Pattern: Family game nights, holidays, vacations
+Persona 3: "Creator Chris" (22-30, Content Enthusiast)
+Demographics: Aspiring content creator, tech-savvy
+Behavior: Early adopter, shares frequently, values quality
+Pain Points: Content ideation, production complexity
+Goals: Streamline creative process, produce unique content
+Usage Pattern: Regular content creation, collaboration with others
+Market Size
+TAM: 2.8B smartphone users globally interested in video creation
+SAM: 280M users in English-speaking markets aged 18-45
+SOM: 2.8M users willing to pay for premium video creation tools
+
+Product Requirements
+Revolutionary Triple-Feature MVP (Phase 1 - Weeks 1-12)
+STRATEGIC DECISION: Parallel Implementation of Game-Changing Features
+Instead of sequential feature rollout, we're implementing our three competitive advantages simultaneously:
+Auto-Generated Prompts → Immediate user value & reduced friction
+AI Sketch Storyboards → Visual differentiation & professional appeal
+Multi-Device Foundation → Long-term competitive moat
+This approach frontloads our competitive advantages and creates a much stronger initial product.
+
+Core Feature Set 1: Instant Content Creation Engine
+1. Auto-Generated Story Prompts (Week 1-2)
+REQUIREMENT: Zero-Friction Story Creation
+ACCEPTANCE CRITERIA:
+- One-tap prompt generation for each genre (Horror, Comedy, Romance, Drama, Action)
+- 50+ unique templates per genre with smart variations
+- Adaptive prompts based on actor count (1-8 people)
+- Contextual prompts based on location/time (indoor, outdoor, evening, etc.)
+- User preference learning (tracks successful completions)
+- Manual override always available
+- Generated prompts automatically meet character minimums
+
+TECHNICAL SPECS:
+- Advanced prompt template system with variables
+- Machine learning for prompt effectiveness tracking
+- A/B testing framework for template optimization
+- Localization support for international markets
+- Offline prompt caching for 100+ scenarios
+
+BUSINESS IMPACT:
+- Reduces time-to-first-scene from 5 minutes to 30 seconds
+- Increases scene completion rate by estimated 40%
+- Removes creative block barrier for 70% of users
+2. Smart Storyboarding with Constraint Engine
+REQUIREMENT: Guaranteed Filmable Content
+ACCEPTANCE CRITERIA:
+- Real-time constraint validation (actors, equipment, location)
+- AI generates 3-7 shots optimized for available resources
+- Dynamic shot type adjustment based on equipment changes
+- Professional filming terminology and instruction
+- 95% of generated scenes must be physically filmable
+- Regeneration capability with constraint modifications
+
+TECHNICAL SPECS:
+- OpenAI GPT-4 with custom constraint-aware prompts
+- Groq/Mixtral fallback for 99.9% uptime
+- Real-time constraint validation engine
+- Shot feasibility matrix with 15+ shot types
+- Equipment upgrade suggestions and guidance
+
+BUSINESS IMPACT:
+- Eliminates user frustration from impossible scenes
+- Enables true "anyone can film" positioning
+- Creates upgrade path for equipment purchases
+
+Core Feature Set 2: Visual Storyboard Revolution
+3. AI-Generated Sketch Storyboards (Week 3-5)
+REQUIREMENT: Professional Visual Storytelling
+ACCEPTANCE CRITERIA:
+- AI-generated film-style sketch storyboards for every shot
+- Interactive movement arrows and positioning guides
+- Customizable actor positions and camera angles
+- Professional aesthetic matching industry standards
+- Real-time sketch regeneration when shots change
+- Overlay system for equipment and direction notes
+- Export capability for professional use
+
+TECHNICAL SPECS:
+- DALL-E 3 integration for sketch generation
+- Custom prompt engineering for consistent style
+- SVG overlay system for interactive elements
+- Image caching and optimization pipeline
+- Batch processing for multiple shots
+- Style consistency engine across scenes
+
+UNIQUE DIFFERENTIATORS:
+- First consumer app with AI-generated storyboards
+- Bridges gap between amateur and professional filmmaking
+- Creates Instagram-worthy behind-the-scenes content
+- Enables planning without filming equipment
+
+BUSINESS IMPACT:
+- Premium feature justifying higher price point
+- Viral marketing through storyboard sharing
+- Professional creator adoption and testimonials
+4. Interactive Blocking System
+REQUIREMENT: Cinematic Direction Made Simple
+ACCEPTANCE CRITERIA:
+- Touch-interactive storyboard elements
+- Drag-and-drop actor positioning
+- Camera angle adjustment with real-time preview
+- Movement path creation with timeline controls
+- Equipment placement visualization
+- Professional terminology education
+- Export to PDF for professional workflows
+
+TECHNICAL SPECS:
+- Canvas-based interaction system
+- Physics engine for realistic positioning
+- 3D preview generation for complex shots
+- Professional storyboard format export
+- Collaborative editing for multiple users
+
+Core Feature Set 3: Multi-Device Foundation
+5. Device Discovery & Pairing System (Week 6-8)
+REQUIREMENT: Seamless Multi-Device Coordination
+ACCEPTANCE CRITERIA:
+- QR code device pairing (primary device generates, others scan)
+- Automatic device capability detection (camera quality, storage, etc.)
+- Role assignment interface (director, camera operator, actor)
+- Real-time device status monitoring
+- Fallback to manual coordination if networking fails
+- Support for 2-6 devices in filming network
+
+TECHNICAL SPECS:
+- WebRTC peer-to-peer networking with fallbacks
+- QR code generation and scanning system
+- Device capability detection API
+- Mesh network architecture with automatic healing
+- Manual override controls for all functions
+
+IMMEDIATE BENEFITS:
+- Unlocks "professional" shot types from day one
+- Creates network effects (more devices = better content)
+- Enables group activities and social proof
+6. Synchronized Recording Engine (Week 9-10)
+REQUIREMENT: Professional Multi-Angle Capture
+ACCEPTANCE CRITERIA:
+- Sub-100ms synchronization across all devices
+- Coordinated countdown and recording start
+- Automatic shot assignment based on device capabilities
+- Real-time status sharing across network
+- Automatic failure recovery and re-sync
+- Master device controls all secondary devices
+
+TECHNICAL SPECS:
+- NTP time synchronization protocol
+- Audio beep synchronization as fallback
+- WebRTC data channels for control signals
+- Automatic quality adjustment based on network
+- Local recording with cloud sync backup
+
+COMPETITIVE ADVANTAGE:
+- No competitor offers consumer-level multi-device sync
+- Creates professional-quality content with consumer tools
+- Scales quality with number of participants
+7. Multi-Angle Shot Types (Week 11-12)
+REQUIREMENT: Cinematic Shot Library Expansion
+ACCEPTANCE CRITERIA:
+- 10+ new shot types only available with multiple devices
+- AI-driven shot selection and angle optimization
+- Automatic coverage generation (master, medium, close-up)
+- Professional terminology and execution guidance
+- Real-time shot monitoring across all devices
+- Automatic best-angle selection for final edit
+
+NEW SHOT TYPES ENABLED:
+- "Multi-Angle Coverage": 2+ devices capture different angles simultaneously
+- "Cinematic Sequence": Master/medium/close-up professional coverage
+- "Action Sequence": Multiple simultaneous angles for dynamic scenes
+- "Reaction Coverage": Primary action + reaction shots
+- "Dolly Effect": Coordinated movement between devices
+- "Interview Setup": Professional A-cam/B-cam configuration
+
+TECHNICAL SPECS:
+- Extended constraint system for multi-device scenarios
+- AI shot selection algorithm for optimal coverage
+- Real-time angle optimization based on scene content
+- Automatic editing pipeline for multi-angle footage
+
+Recording & Compilation System (Unified Across All Features)
+8. Enhanced Recording Interface (Week 4-6)
+REQUIREMENT: Professional Recording Experience
+ACCEPTANCE CRITERIA:
+- Full-screen camera with AI-generated sketch overlays
+- Smart audio countdown (3-10 seconds based on shot complexity)
+- Real-time guidance from generated storyboards
+- Multi-take management (up to 3 takes per shot)
+- Live quality feedback and stability warnings
+- Seamless integration with multi-device coordination
+
+TECHNICAL SPECS:
+- expo-camera with custom overlay system
+- Audio countdown with visual sketch references
+- Real-time video quality analysis
+- Local storage optimization for multiple devices
+- Network-aware quality adjustment
+9. Live Editing & Assembly (Week 7-9)
+REQUIREMENT: Real-Time Scene Compilation
+ACCEPTANCE CRITERIA:
+- Preview updates as each shot completes
+- Multi-angle footage automatic compilation
+- AI-driven shot selection for best angles
+- Take comparison interface with quality metrics
+- Timeline view of complete scene progression
+- Export preview available throughout filming
+
+TECHNICAL SPECS:
+- Real-time video processing pipeline
+- Multi-stream compilation engine
+- AI shot selection algorithms
+- Progressive preview generation
+- Cloud processing with local fallback
+
+Monetization & Business Model (Integrated)
+10. Premium Feature Monetization
+ENHANCED CREDIT SYSTEM:
+- Free Tier: 1 scene with auto-prompts, basic storyboards, single device
+- Starter ($4.99): 5 scenes + AI sketches + 2-device support
+- Creator ($9.99): 12 scenes + premium sketches + 4-device support  
+- Producer ($19.99): 30 scenes + all features + 6-device support + export options
+
+JUSTIFICATION FOR HIGHER PRICING:
+- AI sketch generation costs (~$0.15 per storyboard)
+- Multi-device coordination infrastructure
+- Premium visual assets and professional tools
+- Advanced AI processing for shot optimization
+
+Development Timeline - Accelerated Parallel Track
+Weeks 1-2: Foundation + Auto-Prompts
+[ ] Project scaffolding with advanced architecture
+[ ] Auto-prompt system with 200+ templates
+[ ] Basic constraint engine
+[ ] Core UI with professional theming
+Weeks 3-4: AI Sketch Integration
+[ ] DALL-E 3 integration and prompt engineering
+[ ] Interactive storyboard system
+[ ] Sketch caching and optimization
+[ ] Professional export functionality
+Weeks 5-6: Multi-Device Foundation
+[ ] Device discovery and QR pairing
+[ ] Basic synchronization system
+[ ] Network architecture with fallbacks
+[ ] Enhanced recording interface
+Weeks 7-8: Recording System Integration
+[ ] Unified recording interface for all features
+[ ] Audio countdown with sketch integration
+[ ] Multi-device recording coordination
+[ ] Take management across devices
+Weeks 9-10: Advanced Multi-Device
+[ ] Synchronized recording engine
+[ ] Multi-angle shot types
+[ ] AI shot selection system
+[ ] Professional coverage modes
+Weeks 11-12: Polish & Launch Prep
+[ ] Live editing system completion
+[ ] Performance optimization across all features
+[ ] Beta testing with all features enabled
+[ ] App Store submission with full feature set
+
+Competitive Advantage Analysis
+Immediate Market Position (Day 1)
+vs. TikTok: Professional storyboarding vs. improvised content
+vs. Runway ML: Collaborative filming vs. solo AI video
+vs. Traditional Apps: Guaranteed filmable content vs. generic generation
+vs. Professional Tools: Consumer simplicity vs. complexity
+6-Month Market Position
+Industry-First: Only app combining AI prompts + sketches + multi-device
+Professional Adoption: Actual filmmakers using for pre-production
+Viral Content: Storyboards themselves become shareable content
+Network Effects: Quality improves exponentially with more devices
+12-Month Vision
+Platform Dominance: The de facto standard for group video creation
+Professional Crossover: Used by film schools and indie productions
+Technology Licensing: Other apps integrate our constraint system
+Community Platform: User-generated content and challenges
+This aggressive parallel development strategy frontloads all our competitive advantages, creating a product that's immediately differentiated and has clear upgrade paths for long-term growth.
+
+Technical Architecture (Updated for 2025)
+System Overview
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   iOS App       │    │   Supabase      │    │   AI Services   │
+│ (React Native   │────│   Backend       │────│   (OpenAI 2025) │
+│  + Expo SDK 53) │    │   (Enhanced)    │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Device Mesh   │    │   Cloud Storage │    │   Video API     │
+│   (WebRTC P2P)  │    │   (Supabase +   │    │   (Runway Gen-3/│
+│                 │    │    S3-compatible)│    │    Pika 2.0)    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+Core Technology Stack (2025 Latest)
+Frontend - React Native 0.79 + Expo SDK 53
+React Native: 0.79 (released April 2025, includes React 19)
+Expo SDK: 53 (New Architecture enabled by default)
+Key Features: DOM Components support, React DevTools integration
+Performance: 40% faster Android builds, enhanced iOS optimization
+Camera: expo-camera with New Architecture compatibility
+Video: expo-video (stable release, replaces expo-av)
+Audio: expo-audio (beta, modern API)
+Navigation: React Navigation 7 (automatic with Expo Router)
+Backend - Supabase (2025 Enhanced)
+Database: PostgreSQL with Edge Functions (Deno-based)
+Authentication: Enhanced with anonymous sign-ins, social providers
+Storage: S3-compatible with multipart uploads
+Real-time: WebSocket-based with improved performance
+Pricing:
+Free: 2 projects, 500MB database, 1GB storage
+Pro: $25/month, $10 compute credits included
+Team: $599/month, advanced security (SOC2, HIPAA)
+New Features 2025:
+Native AI model support in Edge Functions
+Dedicated Pooler for better performance
+Enhanced routing with geo-optimization
+AI Processing (2025 Current Providers)
+Primary: OpenAI GPT-4o + DALL-E 3
+OPENAI_2025_PRICING = {
+  'GPT-4o': {
+    input: '$5.00 per 1M tokens',    // Updated 2025 pricing
+    output: '$15.00 per 1M tokens',
+    capabilities: 'Text + Vision + Audio integrated'
+  },
+  'GPT-4o-mini': {
+    input: '$0.15 per 1M tokens',
+    output: '$0.60 per 1M tokens',
+    use_case: 'High-volume, cost-effective requests'
+  },
+  'DALL-E-3': {
+    standard_1024: '$0.04 per image',
+    hd_1024: '$0.08 per image',
+    standard_1792: '$0.08 per image',
+    hd_1792: '$0.12 per image'
+  }
+}
+Fallback: Groq + Mixtral (2025)
+Advantages: 10x faster inference, 90% cost reduction
+Limitations: Smaller context window, fewer creative capabilities
+Use Case: Real-time constraint validation, rapid prototyping
+Backup: Google Gemini Pro (2025)
+Advantages: Competitive pricing, strong multimodal capabilities
+Integration: Via Google AI Studio API
+Use Case: Secondary fallback for script generation
+Video Processing (2025 State-of-the-Art)
+Primary: Runway ML Gen-3 Alpha
+Quality: Industry-leading coherence and realism
+Pricing: $95/month unlimited (slow), 2250 credits/month (fast)
+Capabilities: 10-second clips, 4K resolution
+API: Stable, production-ready
+Use Case: Final video compilation and professional editing
+Secondary: Pika Labs 2.0
+Quality: Excellent for social media content
+Pricing: $28/month (no watermarks, commercial use)
+Capabilities: Scene Ingredients, improved text alignment
+Target: Consumer-focused, individual creators
+Use Case: Quick turnaround, lower-cost processing
+Emerging: Google VEO 2 (Beta Access)
+Quality: 4K resolution, exceptional realism
+Status: Limited beta access, US only
+Capabilities: Professional-grade output quality
+Future: Potential primary provider when GA
+Mobile Development (2025 Specifications)
+Device Requirements
+Primary Support: iPhone 12+ (iOS 15.1+)
+Optimal: iPhone 14 Pro+ for ProRAW, Cinematic mode
+Storage: Minimum 2GB free space for video processing
+RAM: 6GB+ recommended for multi-device coordination
+Network: 5G or WiFi 6 for optimal multi-device sync
+Camera Integration
+CAMERA_SPECS_2025 = {
+  'expo-camera': {
+    version: 'Latest with New Architecture',
+    features: [
+      'ProRAW support (iPhone 12 Pro+)',
+      'Cinematic mode integration',
+      '4K 60fps recording',
+      'Advanced stabilization',
+      'Real-time focus tracking'
+    ]
+  },
+  'expo-video': {
+    version: 'Stable release (SDK 53)',
+    features: [
+      'Hardware-accelerated playback',
+      'Picture-in-Picture support',
+      'Lock screen controls',
+      'Background audio',
+      'Thumbnail generation'
+    ]
+  }
+}
+Performance Requirements (2025 Standards)
+App Launch: < 2 seconds (New Architecture optimization)
+AI Generation: < 10 seconds (GPT-4o speed improvements)
+Video Recording: 4K 60fps with real-time overlays
+Multi-device Sync: < 50ms latency (WebRTC + 5G)
+Scene Compilation: < 20 seconds for 60-second scenes
+Memory Usage: < 150MB baseline, < 500MB during recording
+Security & Privacy (2025 Compliance)
+Data Encryption: AES-256 with quantum-resistant algorithms
+API Security: OAuth 2.1 with PKCE, JWT with short expiration
+Content Moderation: OpenAI's latest safety models + Perspective API
+Privacy Compliance: GDPR, CCPA, PIPEDA fully compliant
+Child Safety: Enhanced age verification, family controls
+
+Monetization Implementation (Updated 2025 Costs)
+Revised Cost Analysis
+COST_ANALYSIS_2025 = {
+  'scene_generation': {
+    'prompt_processing': '$0.02',    // GPT-4o-mini for prompts
+    'storyboard_creation': '$0.15',  // GPT-4o for complex generation
+    'sketch_generation': '$0.08',    // DALL-E 3 standard quality
+    'total_per_scene': '$0.25'
+  },
+  'video_compilation': {
+    'runway_processing': '$0.35',    // Based on 60-second scene
+    'storage_transfer': '$0.05',     // Supabase + CDN costs
+    'total_per_scene': '$0.40'
+  },
+  'infrastructure_monthly': {
+    'supabase_pro': '$25',
+    'openai_api': '$150',            // Estimated for 1000 scenes/month
+    'runway_subscription': '$95',
+    'cdn_bandwidth': '$30',
+    'monitoring_tools': '$50',
+    'total_monthly': '$350'
+  }
+}
+Updated Pricing Strategy
+PRICING_TIERS_2025 = {
+  'Free': {
+    'scenes': 1,
+    'features': ['Basic prompts', 'Single device', 'Watermarked export'],
+    'cost_per_user': '$0.65'
+  },
+  'Creator': {
+    'price': '$7.99',
+    'scenes': 8,
+    'features': ['AI sketches', '2-device sync', 'HD export'],
+    'margin': '85%'
+  },
+  'Producer': {
+    'price': '$14.99',
+    'scenes': 20,
+    'features': ['All features', '4-device sync', '4K export'],
+    'margin': '88%'
+  },
+  'Studio': {
+    'price': '$29.99',
+    'scenes': 50,
+    'features': ['Professional tools', '6-device sync', 'API access'],
+    'margin': '90%'
+  }
+}
+External Service Budget (Monthly - 2025)
+OpenAI API: $300 (GPT-4o + DALL-E 3 for 2000 scenes/month)
+Runway ML Pro: $95 (unlimited slow generation)
+Supabase Pro: $25 (enhanced limits, dedicated pooler)
+Additional Video Processing: $200 (Pika Labs for overflow)
+CDN & Storage: $50 (global content delivery)
+Monitoring & Analytics: $80 (PostHog Pro, Sentry, performance tools)
+Development Tools: $50 (Cursor Pro, testing services)
+Total Monthly: $800 operational costs
+
+Data Models (Updated for 2025)
+Enhanced User Profile
+interface UserProfile {
+  id: string;
+  email: string;
+  displayName: string;
+  avatarUrl?: string;
+  createdAt: Date;
+  subscription: SubscriptionTier;
+  credits: number;
+  preferences: UserPreferences;
+  stats: UserStats;
+  deviceCapabilities: DeviceCapabilities; // New for 2025
+  aiUsageHistory: AIUsageMetrics;         // New for 2025
+}
+
+interface DeviceCapabilities {
+  model: string;              // iPhone 15 Pro
+  cameras: CameraSpec[];      // Front, back, ultra-wide
+  hasLidar: boolean;
+  supportsProRAW: boolean;
+  maxVideoResolution: string; // 4K, 8K
+  storageAvailable: number;   // GB
+  networkType: '5G' | '4G' | 'WiFi';
+}
+
+interface AIUsageMetrics {
+  totalScenesGenerated: number;
+  favoriteGenres: string[];
+  averageActorCount: number;
+  preferredShotTypes: string[];
+  qualityPreference: 'speed' | 'balanced' | 'quality';
+}
+Enhanced Project Structure
+interface Project {
+  id: string;
+  userId: string;
+  title: string;
+  genre: Genre;
+  status: 'storyboard' | 'filming' | 'editing' | 'complete';
+  constraints: FilmingConstraints;
+  storyboard: Shot[];
+  createdAt: Date;
+  updatedAt: Date;
+  
+  // New 2025 fields
+  aiModel: 'gpt-4o' | 'gpt-4o-mini' | 'groq-mixtral';
+  videoQuality: '1080p' | '4K' | '8K';
+  multiDeviceEnabled: boolean;
+  collaborators: string[];        // User IDs
+  exportFormats: ExportFormat[];
+  analytics: ProjectAnalytics;
+}
+
+interface Shot {
+  id: string;
+  number: number;
+  type: ShotType;
+  dialogue: string;
+  blockingInstructions: string;
+  estimatedDuration: number;
+  takes: Take[];
+  selectedTakeId?: string;
+  
+  // Enhanced 2025 fields
+  sketchImageUrl?: string;        // DALL-E 3 generated
+  sketchPrompt?: string;          // For regeneration
+  aiQualityScore: number;         // 0-100
+  deviceAssignments: DeviceAssignment[]; // Multi-device
+  realTimeGuidance: GuidanceData;
+}
+
+interface Take {
+  id: string;
+  videoUri: string;
+  duration: number;
+  quality: QualityMetrics;
+  recordedAt: Date;
+  
+  // New 2025 fields
+  deviceId: string;
+  resolution: string;             // 1080p, 4K, 8K
+  codec: string;                  // H.264, H.265, ProRes
+  metadata: VideoMetadata;
+  aiAnalysis: AIQualityAnalysis;
+}
+
+User Experience Requirements
+Design Principles
+Cinematic First: Every interface element should feel like professional filmmaking
+Progressive Disclosure: Advanced features unlock as users gain experience
+Social by Default: Optimize for group activities, not solo usage
+Guided Discovery: Users should never feel lost or overwhelmed
+Instant Gratification: Quick wins and immediate positive feedback
+Accessibility Requirements
+VoiceOver Support: Full screen reader compatibility
+Dynamic Type: Support for large text sizes
+High Contrast: Alternative color schemes for visibility
+Gesture Alternatives: Button alternatives for complex gestures
+Audio Descriptions: Voice guidance for camera positioning
+Device Support
+Primary: iPhone 12 and newer (iOS 15+)
+Secondary: iPhone X/XS/XR with limited features
+Future: iPad support for director/producer roles
+Not Supported: iPhone 8 and older (insufficient processing power)
+
+Success Metrics & KPIs
+User Acquisition Metrics
+Download Rate: Target 10K downloads/month by month 6
+Onboarding Completion: >80% complete tutorial
+First Scene Creation: >70% create first scene within 24 hours
+Cost Per Acquisition: <$5 through organic and paid channels
+Engagement Metrics
+Daily Active Users: 25% of monthly users
+Session Duration: Average 15 minutes per session
+Scenes Per User: 3+ scenes per month for active users
+Feature Adoption: 40% use advanced features within 30 days
+Business Metrics
+Revenue Per User: $12 average revenue per paying user
+Conversion Rate: 8% free-to-paid conversion
+Monthly Recurring Revenue: $50K by month 12
+Customer Lifetime Value: $35 average LTV
+Quality Metrics
+Scene Completion Rate: 85% of started scenes get finished
+User Satisfaction: 4.5+ App Store rating
+Content Sharing: 60% of completed scenes get shared
+Support Tickets: <2% of users require support
+
+Risk Assessment & Mitigation
+Technical Risks
+Risk
+Probability
+Impact
+Mitigation Strategy
+AI Service Outages
+High
+High
+Multi-provider fallback system
+Video Processing Failures
+Medium
+High
+Local processing fallback
+Device Sync Issues
+Medium
+Medium
+Manual sync alternatives
+Storage Limitations
+High
+Medium
+Intelligent cleanup algorithms
+
+Business Risks
+Risk
+Probability
+Impact
+Mitigation Strategy
+Low User Adoption
+Medium
+High
+Extensive user testing, MVP iteration
+Content Moderation Issues
+High
+High
+Automated filtering + human review
+Competition from Big Tech
+Medium
+High
+Focus on unique constraint system
+Monetization Challenges
+Low
+High
+Multiple revenue streams
+
+Regulatory Risks
+Risk
+Probability
+Impact
+Mitigation Strategy
+Privacy Regulation Changes
+Medium
+Medium
+Privacy-first architecture
+Content Liability
+Low
+High
+Clear ToS and content guidelines
+App Store Rejection
+Low
+High
+Early App Store engagement
+
+
+Development Timeline
+Phase 1: MVP Foundation (Weeks 1-8)
+Week 1-2: Setup & Architecture
+[ ] Project scaffolding with React Native + Expo
+[ ] Supabase backend configuration
+[ ] Basic navigation and authentication
+[ ] Core UI component library
+Week 3-4: Smart Storyboarding
+[ ] Constraint logic engine
+[ ] OpenAI integration with custom prompts
+[ ] Storyboard generation and display
+[ ] Basic shot validation system
+Week 5-6: Recording System
+[ ] Camera interface with overlays
+[ ] Audio countdown implementation
+[ ] Take management and local storage
+[ ] Quality feedback systems
+Week 7-8: Compilation & Sharing
+[ ] Video assembly pipeline
+[ ] Export and sharing functionality
+[ ] In-app purchase integration
+[ ] Beta testing preparation
+Phase 2: Enhanced Features (Weeks 9-16)
+Week 9-10: User Experience Enhancement
+[ ] Auto-generated story prompts
+[ ] Advanced options interface
+[ ] Live editing and take selection
+[ ] Performance optimization
+Week 11-12: Visual Improvements
+[ ] AI-assisted sketch storyboards
+[ ] Enhanced camera overlays
+[ ] Professional UI polish
+[ ] Accessibility features
+Week 13-14: Multi-Device Foundation
+[ ] Device discovery and pairing
+[ ] Basic synchronization system
+[ ] Two-device filming capability
+[ ] Network reliability improvements
+Week 15-16: Testing & Refinement
+[ ] Comprehensive testing across devices
+[ ] Performance optimization
+[ ] Bug fixes and stability improvements
+[ ] App Store submission preparation
+Phase 3: Advanced Capabilities (Weeks 17-24)
+Week 17-18: Professional Features
+[ ] Full multi-device coordination
+[ ] Advanced shot types
+[ ] Professional filming modes
+[ ] AI-assisted positioning
+Week 19-20: Platform Optimization
+[ ] Performance tuning for scale
+[ ] Advanced analytics integration
+[ ] Content moderation systems
+[ ] Customer support tools
+Week 21-22: Community Features
+[ ] Social sharing improvements
+[ ] Community challenges
+[ ] User-generated content systems
+[ ] Creator monetization tools
+Week 23-24: Scale Preparation
+[ ] Infrastructure scaling
+[ ] International localization
+[ ] Advanced monetization features
+[ ] Long-term roadmap execution
+
+Dependencies & Assumptions
+External Dependencies
+OpenAI API: Stable access to GPT-4 for script generation
+Supabase: Continued service reliability and feature support
+Apple App Store: Approval and distribution platform
+iOS Camera Framework: Continued access to native camera features
+Payment Processing: StoreKit reliability for in-app purchases
+Technical Assumptions
+Device Capability: Target devices have sufficient processing power
+Network Availability: Users have stable internet for AI generation
+Storage Space: Users maintain adequate local storage for videos
+Camera Quality: Modern iPhone cameras provide sufficient quality
+User Behavior: Groups willing to coordinate multi-device filming
+Business Assumptions
+Market Demand: Significant interest in collaborative video creation
+Monetization: Users willing to pay for premium creative tools
+Content Quality: AI-generated scripts provide sufficient entertainment value
+Social Sharing: Created content drives organic user acquisition
+Retention: Social creation creates stronger engagement than solo tools
+
+Success Definition
+Launch Success Criteria (Month 3)
+[ ] 50K total downloads
+[ ] 4.0+ App Store rating with 500+ reviews
+[ ] 60% user completion rate for first scene
+[ ] 5% conversion to paid credits
+[ ] <1% crash rate across supported devices
+Growth Success Criteria (Month 6)
+[ ] 150K total downloads
+[ ] 25K monthly active users
+[ ] $15K monthly recurring revenue
+[ ] 40% monthly user retention
+[ ] Featured in App Store 'New & Noteworthy'
+Scale Success Criteria (Month 12)
+[ ] 500K total downloads
+[ ] 100K monthly active users
+[ ] $50K monthly recurring revenue
+[ ] International expansion to 3+ countries
+[ ] Series A funding or sustainable profitability
+
+Appendices
+Appendix A: Competitive Analysis
+[Detailed comparison with TikTok, Runway ML, Luma AI, and other video creation tools]
+Appendix B: Technical Specifications
+[Detailed API documentation, database schemas, and system architecture diagrams]
+Appendix C: User Research
+[User interview findings, survey results, and persona development research]
+Appendix D: Legal Considerations
+[Privacy policy requirements, terms of service, content guidelines, and compliance frameworks]
+
+Document Approval:
+[ ] Product Manager Sign-off
+[ ] Engineering Lead Review
+[ ] Design Lead Review
+[ ] Business Stakeholder Approval
+[ ] Legal & Compliance Review
+Next Steps:
+Engineering team capacity planning
+Design mockup creation
+Technical architecture deep-dive
+Development sprint planning
+Beta tester recruitment
+

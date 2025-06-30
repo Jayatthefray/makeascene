@@ -1,0 +1,716 @@
+Make A Scene - Data & Database Plan (DDP)
+Document Version: 1.0
+ Last Updated: June 29, 2025
+ Database Architect: [To be assigned]
+ Data Engineer: [To be assigned]
+ Security Lead: [To be assigned]
+
+Executive Summary
+Data Strategy Overview
+Make A Scene's data architecture is designed to support real-time collaborative filmmaking with AI-generated content, multi-device synchronization, and scalable media processing. Our data strategy prioritizes performance, security, and global scalability while maintaining GDPR compliance and user privacy.
+Key Data Requirements
+Real-time synchronization across multiple devices during filming
+AI-generated content storage with version control and regeneration capability
+Media file management with multi-resolution support and global CDN distribution
+User privacy compliance with granular data controls and encryption
+Analytics and insights for product optimization and user behavior analysis
+Technology Stack Summary
+Primary Database: Supabase PostgreSQL with Row Level Security (RLS)
+Real-time Engine: Supabase Realtime (WebSocket-based)
+File Storage: Supabase Storage (S3-compatible) with global CDN
+Cache Layer: Redis for session management and constraint validation
+Analytics: PostHog for behavioral data, custom metrics pipeline
+AI Data: Structured storage for prompts, generations, and model responses
+
+Database Architecture
+Primary Database: Supabase PostgreSQL
+Core Benefits for Make A Scene
+Row Level Security (RLS): Automatic data isolation per user/project
+Real-time Subscriptions: Live updates during collaborative filming
+Edge Functions: AI processing logic close to data
+Global Distribution: Multi-region deployment for low latency
+Automatic Backups: Point-in-time recovery with 7-day retention
+Database Specifications
+-- Database Configuration
+-- PostgreSQL Version: 15.x (Latest Supabase supported)
+-- Connection Pooling: PgBouncer with transaction mode
+-- Extensions: uuid-ossp, postgis, vector (for AI embeddings)
+-- Backup Strategy: Continuous WAL archiving + daily snapshots
+-- Scaling: Read replicas in US-East, US-West, EU-West
+Schema Design Philosophy
+Design Principles
+Collaborative-First: All tables support multi-user access patterns
+Temporal Data: Audit trails and version history for all critical data
+Constraint-Driven: Database enforces business logic at the data layer
+Performance-Optimized: Indexes and partitioning for real-time queries
+Privacy-Compliant: Encryption and deletion capabilities built-in
+Data Relationships Overview
+Users (1) ──→ (N) Projects ──→ (N) Shots ──→ (N) Takes
+  │              │               │            │
+  │              │               └──→ (N) AIGenerations
+  │              └──→ (N) Collaborators
+  └──→ (N) Subscriptions ──→ (N) CreditTransactions
+
+Detailed Schema Design
+1. User Management Schema
+users Table
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  display_name VARCHAR(100),
+  avatar_url TEXT,
+  phone VARCHAR(20),
+  date_of_birth DATE,
+  
+  -- Subscription & Credits
+  subscription_tier subscription_tier_enum DEFAULT 'free',
+  credits INTEGER DEFAULT 1,
+  subscription_expires_at TIMESTAMP WITH TIME ZONE,
+  
+  -- Preferences
+  preferences JSONB DEFAULT '{}',
+  device_capabilities JSONB DEFAULT '{}',
+  
+  -- Privacy & Security
+  email_verified BOOLEAN DEFAULT FALSE,
+  phone_verified BOOLEAN DEFAULT FALSE,
+  two_factor_enabled BOOLEAN DEFAULT FALSE,
+  privacy_settings JSONB DEFAULT '{}',
+  
+  -- Analytics & AI
+  ai_usage_stats JSONB DEFAULT '{}',
+  onboarding_completed BOOLEAN DEFAULT FALSE,
+  last_active_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
+  -- Audit
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Indexes for performance
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_subscription ON users(subscription_tier, subscription_expires_at);
+CREATE INDEX idx_users_last_active ON users(last_active_at);
+CREATE INDEX idx_users_deleted ON users(deleted_at) WHERE deleted_at IS NULL;
+
+-- Row Level Security
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own profile" ON users FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid() = id);
+user_sessions Table
+CREATE TABLE user_sessions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  device_id VARCHAR(255) NOT NULL,
+  device_info JSONB,
+  ip_address INET,
+  user_agent TEXT,
+  location_data JSONB,
+  session_token VARCHAR(255) UNIQUE,
+  expires_at TIMESTAMP WITH TIME ZONE,
+  last_activity TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_sessions_user ON user_sessions(user_id, expires_at);
+CREATE INDEX idx_sessions_token ON user_sessions(session_token);
+2. Project & Collaboration Schema
+projects Table
+CREATE TABLE projects (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  genre genre_enum NOT NULL,
+  
+  -- Project Status
+  status project_status_enum DEFAULT 'storyboard',
+  progress_percentage INTEGER DEFAULT 0 CHECK (progress_percentage >= 0 AND progress_percentage <= 100),
+  
+  -- AI & Generation Settings
+  ai_model ai_model_enum DEFAULT 'gpt-4o',
+  content_rating content_rating_enum DEFAULT 'PG',
+  scene_length_seconds INTEGER DEFAULT 60,
+  dialogue_density dialogue_density_enum DEFAULT 'moderate',
+  
+  -- Filming Constraints
+  constraints JSONB NOT NULL DEFAULT '{}', -- Actor count, equipment, etc.
+  filming_mode filming_mode_enum DEFAULT 'single_device',
+  
+  -- Media & Export
+  video_quality video_quality_enum DEFAULT '1080p',
+  export_formats TEXT[] DEFAULT ARRAY['mp4'],
+  thumbnail_url TEXT,
+  final_video_url TEXT,
+  
+  -- Collaboration
+  is_public BOOLEAN DEFAULT FALSE,
+  allow_collaboration BOOLEAN DEFAULT TRUE,
+  collaboration_code VARCHAR(10) UNIQUE,
+  
+  -- Analytics
+  view_count INTEGER DEFAULT 0,
+  share_count INTEGER DEFAULT 0,
+  completion_time_seconds INTEGER,
+  
+  -- Audit
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  completed_at TIMESTAMP WITH TIME ZONE,
+  deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Performance indexes
+CREATE INDEX idx_projects_user ON projects(user_id, status);
+CREATE INDEX idx_projects_genre ON projects(genre, is_public);
+CREATE INDEX idx_projects_collaboration ON projects(collaboration_code) WHERE collaboration_code IS NOT NULL;
+CREATE INDEX idx_projects_status ON projects(status, updated_at);
+
+-- Full-text search
+CREATE INDEX idx_projects_search ON projects USING gin(to_tsvector('english', title || ' ' || COALESCE(description, '')));
+
+-- Row Level Security
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can access own projects" ON projects FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can view public projects" ON projects FOR SELECT USING (is_public = true);
+project_collaborators Table
+CREATE TABLE project_collaborators (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  role collaborator_role_enum DEFAULT 'actor',
+  permissions JSONB DEFAULT '{}',
+  device_assignments JSONB DEFAULT '[]',
+  
+  -- Status
+  status collaboration_status_enum DEFAULT 'pending',
+  invited_by UUID REFERENCES users(id),
+  invited_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  joined_at TIMESTAMP WITH TIME ZONE,
+  last_active_at TIMESTAMP WITH TIME ZONE,
+  
+  UNIQUE(project_id, user_id)
+);
+
+CREATE INDEX idx_collaborators_project ON project_collaborators(project_id, status);
+CREATE INDEX idx_collaborators_user ON project_collaborators(user_id, status);
+3. Storyboard & AI Generation Schema
+shots Table
+CREATE TABLE shots (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  shot_number INTEGER NOT NULL,
+  
+  -- Shot Definition
+  shot_type shot_type_enum NOT NULL,
+  dialogue TEXT,
+  blocking_instructions TEXT,
+  estimated_duration_seconds INTEGER DEFAULT 30,
+  
+  -- AI Generation Data
+  ai_generation_id UUID, -- References ai_generations table
+  storyboard_sketch_url TEXT,
+  storyboard_prompt TEXT,
+  regeneration_count INTEGER DEFAULT 0,
+  
+  -- Filming Constraints
+  required_actors INTEGER DEFAULT 1,
+  requires_tripod BOOLEAN DEFAULT FALSE,
+  requires_props TEXT[],
+  complexity_score INTEGER DEFAULT 1 CHECK (complexity_score >= 1 AND complexity_score <= 5),
+  
+  -- Device Assignments (Multi-device)
+  device_assignments JSONB DEFAULT '[]',
+  filming_instructions JSONB DEFAULT '{}',
+  
+  -- Status & Progress
+  status shot_status_enum DEFAULT 'not_started',
+  takes_count INTEGER DEFAULT 0,
+  selected_take_id UUID,
+  
+  -- Quality Metrics
+  ai_quality_score INTEGER CHECK (ai_quality_score >= 0 AND ai_quality_score <= 100),
+  user_rating INTEGER CHECK (user_rating >= 1 AND user_rating <= 5),
+  
+  -- Audit
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
+  UNIQUE(project_id, shot_number)
+);
+
+-- Performance indexes
+CREATE INDEX idx_shots_project ON shots(project_id, shot_number);
+CREATE INDEX idx_shots_status ON shots(status, updated_at);
+CREATE INDEX idx_shots_ai_generation ON shots(ai_generation_id);
+CREATE INDEX idx_shots_selected_take ON shots(selected_take_id);
+
+-- Row Level Security (inherit from project)
+ALTER TABLE shots ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can access shots from accessible projects" ON shots FOR ALL 
+USING (EXISTS (
+  SELECT 1 FROM projects p 
+  WHERE p.id = shots.project_id 
+  AND (p.user_id = auth.uid() OR EXISTS (
+    SELECT 1 FROM project_collaborators pc 
+    WHERE pc.project_id = p.id AND pc.user_id = auth.uid() AND pc.status = 'active'
+  ))
+));
+ai_generations Table
+CREATE TABLE ai_generations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  
+  -- Generation Request
+  generation_type ai_generation_type_enum NOT NULL, -- 'storyboard', 'sketch', 'script'
+  user_prompt TEXT NOT NULL,
+  system_prompt TEXT,
+  constraints JSONB DEFAULT '{}',
+  
+  -- AI Model Info
+  ai_model ai_model_enum NOT NULL,
+  model_version VARCHAR(50),
+  temperature DECIMAL(3,2) DEFAULT 0.7,
+  max_tokens INTEGER,
+  
+  -- Response Data
+  ai_response JSONB NOT NULL,
+  tokens_used INTEGER,
+  processing_time_ms INTEGER,
+  cost_usd DECIMAL(10,4),
+  
+  -- Quality & Validation
+  quality_score INTEGER CHECK (quality_score >= 0 AND quality_score <= 100),
+  validation_status validation_status_enum DEFAULT 'pending',
+  validation_errors JSONB,
+  
+  -- Usage & Regeneration
+  is_selected BOOLEAN DEFAULT FALSE,
+  regenerated_from UUID REFERENCES ai_generations(id),
+  regeneration_reason TEXT,
+  
+  -- Audit
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES users(id)
+);
+
+-- Performance indexes
+CREATE INDEX idx_ai_generations_project ON ai_generations(project_id, generation_type);
+CREATE INDEX idx_ai_generations_model ON ai_generations(ai_model, created_at);
+CREATE INDEX idx_ai_generations_cost ON ai_generations(cost_usd, created_at);
+CREATE INDEX idx_ai_generations_regenerated ON ai_generations(regenerated_from);
+4. Media & Recording Schema
+takes Table
+CREATE TABLE takes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  shot_id UUID REFERENCES shots(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id),
+  take_number INTEGER NOT NULL,
+  
+  -- Device & Recording Info
+  device_id VARCHAR(255) NOT NULL,
+  device_role device_role_enum DEFAULT 'primary', -- 'primary', 'secondary', 'angle_1', etc.
+  device_capabilities JSONB DEFAULT '{}',
+  
+  -- Video File Data
+  video_url TEXT NOT NULL,
+  video_filename VARCHAR(255),
+  file_size_bytes BIGINT,
+  duration_seconds DECIMAL(10,3),
+  
+  -- Video Technical Specs
+  resolution video_resolution_enum DEFAULT '1080p',
+  codec video_codec_enum DEFAULT 'h264',
+  frame_rate INTEGER DEFAULT 30,
+  bitrate_kbps INTEGER,
+  
+  -- Quality Metrics
+  ai_quality_analysis JSONB DEFAULT '{}',
+  stability_score INTEGER CHECK (stability_score >= 0 AND stability_score <= 100),
+  audio_quality_score INTEGER CHECK (audio_quality_score >= 0 AND audio_quality_score <= 100),
+  framing_score INTEGER CHECK (framing_score >= 0 AND framing_score <= 100),
+  overall_quality_score INTEGER CHECK (overall_quality_score >= 0 AND overall_quality_score <= 100),
+  
+  -- User Feedback
+  user_rating INTEGER CHECK (user_rating >= 1 AND user_rating <= 5),
+  user_notes TEXT,
+  is_selected BOOLEAN DEFAULT FALSE,
+  
+  -- Processing Status
+  processing_status processing_status_enum DEFAULT 'uploaded',
+  processing_error TEXT,
+  thumbnail_url TEXT,
+  
+  -- Audit
+  recorded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  
+  UNIQUE(shot_id, take_number, device_id)
+);
+
+-- Performance indexes
+CREATE INDEX idx_takes_shot ON takes(shot_id, take_number);
+CREATE INDEX idx_takes_device ON takes(device_id, recorded_at);
+CREATE INDEX idx_takes_quality ON takes(overall_quality_score DESC);
+CREATE INDEX idx_takes_selected ON takes(is_selected, shot_id);
+CREATE INDEX idx_takes_processing ON takes(processing_status, created_at);
+video_exports Table
+CREATE TABLE video_exports (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id),
+  
+  -- Export Configuration
+  export_format export_format_enum NOT NULL,
+  resolution video_resolution_enum NOT NULL,
+  quality_preset quality_preset_enum DEFAULT 'balanced',
+  include_watermark BOOLEAN DEFAULT TRUE,
+  
+  -- Platform Optimization
+  target_platform platform_enum, -- 'instagram_story', 'tiktok', 'youtube', 'general'
+  aspect_ratio aspect_ratio_enum DEFAULT '16:9',
+  max_duration_seconds INTEGER,
+  
+  -- Processing Data
+  takes_included UUID[] NOT NULL,
+  editing_instructions JSONB DEFAULT '{}',
+  processing_service processing_service_enum DEFAULT 'runway',
+  
+  -- Output Data
+  output_url TEXT,
+  output_filename VARCHAR(255),
+  file_size_bytes BIGINT,
+  duration_seconds DECIMAL(10,3),
+  
+  -- Status & Metrics
+  status export_status_enum DEFAULT 'queued',
+  processing_started_at TIMESTAMP WITH TIME ZONE,
+  processing_completed_at TIMESTAMP WITH TIME ZONE,
+  processing_error TEXT,
+  cost_usd DECIMAL(10,4),
+  
+  -- Usage Tracking
+  download_count INTEGER DEFAULT 0,
+  share_count INTEGER DEFAULT 0,
+  last_accessed_at TIMESTAMP WITH TIME ZONE,
+  
+  -- Audit
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Performance indexes
+CREATE INDEX idx_exports_project ON video_exports(project_id, status);
+CREATE INDEX idx_exports_user ON video_exports(user_id, created_at);
+CREATE INDEX idx_exports_status ON video_exports(status, processing_started_at);
+CREATE INDEX idx_exports_platform ON video_exports(target_platform, resolution);
+5. Billing & Credits Schema
+subscriptions Table
+CREATE TABLE subscriptions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  
+  -- Subscription Details
+  tier subscription_tier_enum NOT NULL,
+  status subscription_status_enum DEFAULT 'active',
+  
+  -- Billing Cycle
+  billing_cycle billing_cycle_enum DEFAULT 'monthly',
+  amount_usd DECIMAL(10,2) NOT NULL,
+  currency CHAR(3) DEFAULT 'USD',
+  
+  -- Platform Integration
+  platform_subscription_id VARCHAR(255), -- App Store, Stripe, etc.
+  platform platform_enum NOT NULL,
+  
+  -- Dates
+  started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  current_period_start TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  current_period_end TIMESTAMP WITH TIME ZONE,
+  canceled_at TIMESTAMP WITH TIME ZONE,
+  ended_at TIMESTAMP WITH TIME ZONE,
+  
+  -- Trial
+  trial_start TIMESTAMP WITH TIME ZONE,
+  trial_end TIMESTAMP WITH TIME ZONE,
+  
+  -- Audit
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_subscriptions_user ON subscriptions(user_id, status);
+CREATE INDEX idx_subscriptions_platform ON subscriptions(platform_subscription_id);
+CREATE INDEX idx_subscriptions_billing ON subscriptions(current_period_end, status);
+credit_transactions Table
+CREATE TABLE credit_transactions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  
+  -- Transaction Details
+  transaction_type credit_transaction_type_enum NOT NULL,
+  credits_change INTEGER NOT NULL, -- Positive for additions, negative for usage
+  credits_balance_after INTEGER NOT NULL,
+  
+  -- Usage Context
+  project_id UUID REFERENCES projects(id),
+  shot_id UUID REFERENCES shots(id),
+  ai_generation_id UUID REFERENCES ai_generations(id),
+  export_id UUID REFERENCES video_exports(id),
+  
+  -- Cost Tracking
+  cost_usd DECIMAL(10,4),
+  external_transaction_id VARCHAR(255),
+  
+  -- Description
+  description TEXT NOT NULL,
+  metadata JSONB DEFAULT '{}',
+  
+  -- Audit
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES users(id)
+);
+
+-- Performance indexes
+CREATE INDEX idx_credit_transactions_user ON credit_transactions(user_id, created_at);
+CREATE INDEX idx_credit_transactions_type ON credit_transactions(transaction_type, created_at);
+CREATE INDEX idx_credit_transactions_project ON credit_transactions(project_id);
+CREATE INDEX idx_credit_transactions_cost ON credit_transactions(cost_usd, created_at);
+
+Enums & Custom Types
+All Custom Enum Types
+-- User & Subscription Enums
+CREATE TYPE subscription_tier_enum AS ENUM ('free', 'creator', 'producer', 'studio');
+CREATE TYPE subscription_status_enum AS ENUM ('active', 'past_due', 'canceled', 'unpaid');
+CREATE TYPE billing_cycle_enum AS ENUM ('monthly', 'annual');
+CREATE TYPE platform_enum AS ENUM ('ios', 'android', 'web', 'stripe');
+
+-- Project & Content Enums
+CREATE TYPE genre_enum AS ENUM ('horror', 'comedy', 'romance', 'drama', 'action', 'mystery', 'sci_fi', 'fantasy');
+CREATE TYPE project_status_enum AS ENUM ('storyboard', 'filming', 'editing', 'complete', 'archived');
+CREATE TYPE content_rating_enum AS ENUM ('G', 'PG', 'PG-13', 'R');
+CREATE TYPE dialogue_density_enum AS ENUM ('minimal', 'moderate', 'heavy');
+CREATE TYPE filming_mode_enum AS ENUM ('single_device', 'multi_angle', 'full_coverage');
+
+-- AI & Generation Enums
+CREATE TYPE ai_model_enum AS ENUM ('gpt-4o', 'gpt-4o-mini', 'groq-mixtral', 'gemini-pro');
+CREATE TYPE ai_generation_type_enum AS ENUM ('storyboard', 'sketch', 'script', 'prompt_enhancement');
+CREATE TYPE validation_status_enum AS ENUM ('pending', 'approved', 'rejected', 'needs_review');
+
+-- Shot & Filming Enums
+CREATE TYPE shot_type_enum AS ENUM (
+  'selfie', 'single_handheld', 'two_shot_handheld', 
+  'group_static', 'moving_tracking', 'complex_blocking',
+  'multi_angle_coverage', 'cinematic_sequence', 'action_sequence'
+);
+CREATE TYPE shot_status_enum AS ENUM ('not_started', 'recording', 'recorded', 'edited', 'approved');
+CREATE TYPE device_role_enum AS ENUM ('primary', 'secondary', 'angle_1', 'angle_2', 'angle_3', 'angle_4');
+
+-- Video & Media Enums
+CREATE TYPE video_resolution_enum AS ENUM ('720p', '1080p', '4K', '8K');
+CREATE TYPE video_codec_enum AS ENUM ('h264', 'h265', 'prores', 'av1');
+CREATE TYPE video_quality_enum AS ENUM ('720p', '1080p', '4K', '8K');
+CREATE TYPE processing_status_enum AS ENUM ('uploaded', 'processing', 'completed', 'failed');
+CREATE TYPE export_format_enum AS ENUM ('mp4', 'mov', 'avi', 'gif');
+CREATE TYPE export_status_enum AS ENUM ('queued', 'processing', 'completed', 'failed', 'canceled');
+CREATE TYPE quality_preset_enum AS ENUM ('draft', 'balanced', 'high_quality', 'max_quality');
+CREATE TYPE aspect_ratio_enum AS ENUM ('16:9', '9:16', '1:1', '4:3', '21:9');
+CREATE TYPE processing_service_enum AS ENUM ('runway', 'pika', 'local', 'fallback');
+
+-- Collaboration Enums
+CREATE TYPE collaborator_role_enum AS ENUM ('owner', 'director', 'actor', 'camera_operator', 'editor', 'viewer');
+CREATE TYPE collaboration_status_enum AS ENUM ('pending', 'active', 'paused', 'removed');
+
+-- Transaction Enums
+CREATE TYPE credit_transaction_type_enum AS ENUM (
+  'purchase', 'gift', 'refund', 'bonus',
+  'scene_generation', 'sketch_generation', 'video_export', 'premium_feature'
+);
+
+Data Security & Privacy
+Row Level Security (RLS) Implementation
+Security Philosophy
+Principle of Least Privilege: Users can only access data they own or are explicitly granted access to
+Automatic Enforcement: Database-level security prevents application bugs from exposing data
+Collaborative Access: Granular permissions for project collaboration
+Audit Trail: All data access and modifications are logged
+RLS Policies for Core Tables
+-- Projects: Owner + Collaborators Access
+CREATE POLICY "Project access control" ON projects FOR ALL 
+USING (
+  auth.uid() = user_id OR 
+  EXISTS (
+    SELECT 1 FROM project_collaborators pc 
+    WHERE pc.project_id = projects.id 
+    AND pc.user_id = auth.uid() 
+    AND pc.status = 'active'
+  ) OR
+  (is_public = true AND NOT row_action = 'UPDATE' AND NOT row_action = 'DELETE')
+);
+
+-- Shots: Inherit from Projects
+CREATE POLICY "Shot access via project" ON shots FOR ALL 
+USING (
+  EXISTS (
+    SELECT 1 FROM projects p 
+    WHERE p.id = shots.project_id 
+    AND (
+      p.user_id = auth.uid() OR 
+      EXISTS (
+        SELECT 1 FROM project_collaborators pc 
+        WHERE pc.project_id = p.id 
+        AND pc.user_id = auth.uid() 
+        AND pc.status = 'active'
+      )
+    )
+  )
+);
+
+-- Takes: Contributors can access their takes + project members
+CREATE POLICY "Take access control" ON takes FOR ALL 
+USING (
+  auth.uid() = user_id OR
+  EXISTS (
+    SELECT 1 FROM shots s 
+    JOIN projects p ON p.id = s.project_id 
+    WHERE s.id = takes.shot_id 
+    AND (
+      p.user_id = auth.uid() OR 
+      EXISTS (
+        SELECT 1 FROM project_collaborators pc 
+        WHERE pc.project_id = p.id 
+        AND pc.user_id = auth.uid() 
+        AND pc.status = 'active'
+      )
+    )
+  )
+);
+
+-- AI Generations: Project-based access
+CREATE POLICY "AI generation access" ON ai_generations FOR ALL 
+USING (
+  EXISTS (
+    SELECT 1 FROM projects p 
+    WHERE p.id = ai_generations.project_id 
+    AND (
+      p.user_id = auth.uid() OR 
+      EXISTS (
+        SELECT 1 FROM project_collaborators pc 
+        WHERE pc.project_id = p.id 
+        AND pc.user_id = auth.uid() 
+        AND pc.status = 'active'
+      )
+    )
+  )
+);
+
+-- Credit Transactions: User's own transactions only
+CREATE POLICY "Credit transaction privacy" ON credit_transactions FOR ALL 
+USING (auth.uid() = user_id);
+
+-- Video Exports: Project-based access
+CREATE POLICY "Export access control" ON video_exports FOR ALL 
+USING (
+  auth.uid() = user_id OR
+  EXISTS (
+    SELECT 1 FROM projects p 
+    WHERE p.id = video_exports.project_id 
+    AND (
+      p.user_id = auth.uid() OR 
+      EXISTS (
+        SELECT 1 FROM project_collaborators pc 
+        WHERE pc.project_id = p.id 
+        AND pc.user_id = auth.uid() 
+        AND pc.status = 'active'
+      )
+    )
+  )
+);
+Data Encryption Strategy
+Encryption at Rest
+Database: AES-256 encryption for all stored data
+File Storage: Server-side encryption with customer-managed keys
+Backups: Encrypted snapshots with separate key management
+Sensitive Fields: Additional column-level encryption for PII
+Encryption in Transit
+API Calls: TLS 1.3 for all client-server communication
+Database Connections: SSL/TLS required for all connections
+File Uploads: HTTPS with certificate pinning
+WebSocket: WSS (WebSocket Secure) for real-time features
+Key Management
+-- Example of sensitive data encryption
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Function to encrypt sensitive data
+CREATE OR REPLACE FUNCTION encrypt_sensitive_data(data TEXT)
+RETURNS TEXT AS $$
+BEGIN
+  RETURN encode(encrypt(data::bytea, current_setting('app.encryption_key'), 'aes'), 'base64');
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to decrypt sensitive data
+CREATE OR REPLACE FUNCTION decrypt_sensitive_data(encrypted_data TEXT)
+RETURNS TEXT AS $$
+BEGIN
+  RETURN convert_from(decrypt(decode(encrypted_data, 'base64'), current_setting('app.encryption_key'), 'aes'), 'UTF8');
+END;
+$$ LANGUAGE plpgsql;
+GDPR & Privacy Compliance
+Data Minimization
+Collection: Only collect data necessary for app functionality
+Retention: Automatic deletion of old, unused data
+Purpose Limitation: Data used only for stated purposes
+Consent Management: Granular consent tracking and management
+User Rights Implementation
+-- Data export function for GDPR compliance
+CREATE OR REPLACE FUNCTION export_user_data(target_user_id UUID)
+RETURNS JSON AS $$
+DECLARE
+  user_data JSON;
+BEGIN
+  -- Verify requesting user owns this data
+  IF auth.uid() != target_user_id THEN
+    RAISE EXCEPTION 'Unauthorized access to user data';
+  END IF;
+  
+  SELECT json_build_object(
+    'user_profile', (SELECT row_to_json(u) FROM users u WHERE u.id = target_user_id),
+    'projects', (SELECT json_agg(row_to_json(p)) FROM projects p WHERE p.user_id = target_user_id),
+    'credit_transactions', (SELECT json_agg(row_to_json(ct)) FROM credit_transactions ct WHERE ct.user_id = target_user_id),
+    'ai_generations', (
+      SELECT json_agg(row_to_json(ag)) 
+      FROM ai_generations ag 
+      JOIN projects p ON p.id = ag.project_id 
+      WHERE p.user_id = target_user_id
+    )
+  ) INTO user_data;
+  
+  RETURN user_data;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Data deletion function for GDPR compliance
+CREATE OR REPLACE FUNCTION delete_user_data(target_user_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  -- Verify requesting user owns this data
+  IF auth.uid() != target_user_id THEN
+    RAISE EXCEPTION 'Unauthorized deletion of user data';
+  END IF;
+  
+  -- Soft delete approach - mark as deleted but preserve for legal/business needs
+  UPDATE users SET 
+    deleted_at = NOW(),
+    email = 'deleted_' || id || '@deleted.com',
+    display_name = 'Deleted User',
+    avatar_url = NULL,
+    phone = NULL,
+    preferences = '{}',
+    device_capabilities = '{}',
+    ai_usage_stats = '{}'
+  WHERE id = target_user_id;
+  
+  -- Mark user
