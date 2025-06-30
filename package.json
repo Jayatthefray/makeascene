@@ -1,0 +1,7 @@
+{
+  "name": "makeascene-root",
+  "private": true,
+  "scripts": {
+    "start-expo": "cd MakeAScene && npx expo start"
+  }
+} 
