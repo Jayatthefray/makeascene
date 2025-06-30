@@ -9,6 +9,8 @@ import ProjectListScreen from './screens/ProjectListScreen';
 import ProjectDetailScreen from './screens/ProjectDetailScreen';
 import LoginScreen from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
+import CreateSceneScreen from './screens/CreateSceneScreen';
+import FilmingScreen from './screens/FilmingScreen';
 
 const Stack = createStackNavigator();
 
@@ -134,6 +136,8 @@ function RootNavigator() {
           <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ headerShown: false }} />
           <Stack.Screen name="ProjectList" component={ProjectListScreen} options={{ title: 'Projects' }} />
           <Stack.Screen name="ProjectDetail" component={ProjectDetailScreen} options={{ title: 'Project Details' }} />
+          <Stack.Screen name="CreateScene" component={CreateSceneScreen} options={{ title: 'Create Scene' }} />
+          <Stack.Screen name="FilmingScreen" component={FilmingScreen} options={{ headerShown: false }} />
         </>
       )}
     </Stack.Navigator>

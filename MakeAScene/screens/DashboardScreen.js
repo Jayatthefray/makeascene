@@ -10,7 +10,7 @@ const DashboardScreen = ({ navigation }) => {
   const recentProjects = projects.slice(0, 3);
 
   const handleCreateNewScene = () => {
-    navigation.navigate('ProjectDetail', { isNew: true });
+    navigation.navigate('CreateScene');
   };
 
   const handleViewAllProjects = () => {
