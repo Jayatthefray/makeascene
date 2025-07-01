@@ -391,7 +391,7 @@ const CreateSceneScreen = ({ navigation }) => {
         style={styles.startFilmingButton}
         onPress={startFilming}
       >
-        <Text style={styles.startFilmingButtonText}>🎬 Start Filming</Text>
+        <Text style={styles.startFilmingButtonText}>📋 Review Storyboard</Text>
       </TouchableOpacity>
     </View>
   );
@@ -409,7 +409,7 @@ const CreateSceneScreen = ({ navigation }) => {
     }
   };
 
-  // Start filming process
+  // Start storyboard review process
   const startFilming = async () => {
     try {
       // Create project in database
@@ -421,17 +421,16 @@ const CreateSceneScreen = ({ navigation }) => {
         constraints: constraints,
         multiDeviceEnabled: multiDeviceEnabled,
         collaborationCode: collaborationCode,
-        status: 'filming'
+        status: 'storyboard'
       };
 
       const project = await addProject(projectData);
       
-      // Navigate to filming screen
-      navigation.navigate('FilmingScreen', {
+      // Navigate to storyboard screen for review
+      navigation.navigate('StoryboardScreen', {
         projectId: project.id,
         storyboard: storyboard,
-        multiDeviceEnabled: multiDeviceEnabled,
-        deviceRole: deviceService.deviceRole
+        constraints: constraints
       });
     } catch (error) {
       Alert.alert('Error', 'Failed to create project: ' + error.message);

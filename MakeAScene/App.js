@@ -11,6 +11,11 @@ import LoginScreen from './screens/LoginScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import CreateSceneScreen from './screens/CreateSceneScreen';
 import FilmingScreen from './screens/FilmingScreen';
+import StoryboardScreen from './screens/StoryboardScreen';
+import DeviceSetupScreen from './screens/DeviceSetupScreen';
+import ReviewScreen from './screens/ReviewScreen';
+import EditingScreen from './screens/EditingScreen';
+import ExportScreen from './screens/ExportScreen';
 
 const Stack = createStackNavigator();
 
@@ -137,7 +142,12 @@ function RootNavigator() {
           <Stack.Screen name="ProjectList" component={ProjectListScreen} options={{ title: 'Projects' }} />
           <Stack.Screen name="ProjectDetail" component={ProjectDetailScreen} options={{ title: 'Project Details' }} />
           <Stack.Screen name="CreateScene" component={CreateSceneScreen} options={{ title: 'Create Scene' }} />
+          <Stack.Screen name="StoryboardScreen" component={StoryboardScreen} options={{ title: 'Storyboard Review' }} />
+          <Stack.Screen name="DeviceSetupScreen" component={DeviceSetupScreen} options={{ title: 'Device Setup' }} />
           <Stack.Screen name="FilmingScreen" component={FilmingScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ReviewScreen" component={ReviewScreen} options={{ title: 'Review Takes' }} />
+          <Stack.Screen name="EditingScreen" component={EditingScreen} options={{ title: 'Video Editor' }} />
+          <Stack.Screen name="ExportScreen" component={ExportScreen} options={{ title: 'Export & Share' }} />
         </>
       )}
     </Stack.Navigator>
