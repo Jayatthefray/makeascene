@@ -13,25 +13,40 @@ export function ProjectProvider({ children }) {
   // Load all projects
   const loadProjects = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await getProjects();
-    setProjects(data || []);
-    setError(error);
-    setLoading(false);
+    try {
+      const { data, error } = await getProjects();
+      setProjects(data || []);
+      setError(error);
+    } catch (err) {
+      console.warn('Failed to load projects:', err);
+      setProjects([]);
+      setError({ message: 'Failed to load projects' });
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   // Load a single project and its shots
   const loadProject = useCallback(async (projectId) => {
     setLoading(true);
-    const { data, error } = await getProject(projectId);
-    setCurrentProject(data || null);
-    setError(error);
-    if (data) {
-      const { data: shotsData } = await getShots(projectId);
-      setShots(shotsData || []);
-    } else {
+    try {
+      const { data, error } = await getProject(projectId);
+      setCurrentProject(data || null);
+      setError(error);
+      if (data) {
+        const { data: shotsData } = await getShots(projectId);
+        setShots(shotsData || []);
+      } else {
+        setShots([]);
+      }
+    } catch (err) {
+      console.warn('Failed to load project:', err);
+      setCurrentProject(null);
       setShots([]);
+      setError({ message: 'Failed to load project' });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   // Add, update, and refresh helpers
